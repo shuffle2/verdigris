@@ -567,11 +567,13 @@ template <typename... Args> constexpr QOverload<Args...> qOverload = {};
 
 #endif // Qt < 5.7
 
+#define EXPAND(x) x
+
 // Private macro helpers for classical macro programming
 #define W_MACRO_EMPTY
 #define W_MACRO_EVAL(...) __VA_ARGS__
-#define W_MACRO_DELAY(X,...) X(__VA_ARGS__)
-#define W_MACRO_DELAY2(X,...) X(__VA_ARGS__)
+#define W_MACRO_DELAY(X,...) EXPAND(X(__VA_ARGS__))
+#define W_MACRO_DELAY2(X,...) EXPAND(X(__VA_ARGS__))
 #define W_MACRO_TAIL(A, ...) __VA_ARGS__
 #define W_MACRO_STRIGNIFY(...) W_MACRO_STRIGNIFY2(__VA_ARGS__)
 #define W_MACRO_STRIGNIFY2(...) #__VA_ARGS__
@@ -701,7 +703,7 @@ template <typename... Args> constexpr QOverload<Args...> qOverload = {};
  */
 #define W_SIGNAL(NAME, ...) \
     { /* W_SIGNAL need to be placed directly after the signal declaration, without semicolon. */\
-        using w_SignalType = decltype(W_OVERLOAD_RESOLVE(__VA_ARGS__)(&W_ThisType::NAME)); \
+        using w_SignalType = decltype(EXPAND(W_OVERLOAD_RESOLVE(__VA_ARGS__))(&W_ThisType::NAME)); \
         return w_internal::SignalImplementation<w_SignalType, W_MACRO_CONCAT(w_signalIndex_##NAME,__LINE__)>{this}(W_OVERLOAD_REMOVE(__VA_ARGS__)); \
     } \
     static constexpr int W_MACRO_CONCAT(w_signalIndex_##NAME,__LINE__) = \
